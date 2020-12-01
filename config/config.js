@@ -5,9 +5,9 @@ if (Deno.env.get('TEST_ENVIRONMENT')) {
 } else {
   config.database = {
     hostname: "hattie.db.elephantsql.com",
-    database: "vmdsmcnh",
-    user: "vmdsmcnh",
-    password: "ZRPTqWj6Sdy3mOBGj_hYh0fo_86QhW5F",
+    database: "cbdwcmmg",
+    user: "cbdwcmmg",
+    password: "jqxUmoPvIKMOLyoG8tT1uTYBe3_4kz62",
     port: 5432
   };
 }
