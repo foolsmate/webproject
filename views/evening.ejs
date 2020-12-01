@@ -1,0 +1,22 @@
+<%- include('./partials/header.ejs') %>
+
+<h1>Report your evening activities</h1>
+
+<div id="container">
+  <p></p>
+  <form method="POST">
+    <label for="date">Date</label>
+    <input id="date" type="date" label="date" name="date" value="<%- new Date().toISOString().substring(0, 10) %>" />
+    <label for="sports">Sports/exercise duration</label>
+    <input type=" number" name="sports" />
+    <label for="study">Study time</label>
+    <input type="number" name="study" />
+    <label for="eating">Regularity and quality of eating</label>
+    <input type="range" min="1" max="5" name="eating" />
+    <label for="mood">Mood</label>
+    <input type="range" min="1" max="5" name="mood" />
+    <input type="submit" value="Submit!" />
+  </form>
+</div>
+
+<%- include('./partials/header.ejs') %>

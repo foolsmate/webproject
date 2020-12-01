@@ -1,7 +1,15 @@
-import { getReports } from "../../services/reportService.js";
 
-const report = ({render}) => {
-  render('index.ejs', { hello: getReports() });
+const showReportForm = ({ render }) => {
+  render('report.ejs');
 };
- 
-export { report };
+
+const showEveningForm = ({ render }) => {
+  render('evening.ejs');
+};
+
+const showMorningForm = ({ render }) => {
+  render('morning.ejs', { errors: [], success: false });
+};
+
+
+export { showReportForm, showEveningForm, showMorningForm };

@@ -1,0 +1,31 @@
+<%- include('./partials/header.ejs') %>
+
+<h1>Report your morning activities</h1>
+<div id="container">
+  <form method="POST">
+    <label for="date">Date</label>
+    <input type="date" label="date" name="date" value="<%- new Date().toISOString().substring(0, 10) %>" />
+    <label for="duration">Sleep Duration</label>
+    <input type="number" name="duration" />
+    <label for="quality">Sleep Quality</label>
+    <input type="range" min="1" max="5" name="quality" />
+    <label for="mood">General Mood</label>
+    <input type="range" min="1" max="5" name="mood" />
+    <input type="submit" value="Submit!" />
+  </form>
+
+  <% if (success) { %>
+      <p>Success!</p>
+    <% } %>
+  <% if (errors) { %>
+    <ul>
+        <% Object.keys(errors).forEach((attribute) => { %>
+            <% Object.values(errors[attribute]).forEach((err) => { %>
+                <li><%= err %></li>
+            <% }); %>
+        <% }); %>
+    </ul>
+    <% } %>
+</div>
+
+<%- include('./partials/footer.ejs') %>
