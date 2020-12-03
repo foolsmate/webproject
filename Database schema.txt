@@ -3,10 +3,12 @@ CREATE TABLE reports (
   time_of_day TEXT NOT NULL,
   date TEXT NOT NULL,
   sleep_duration DECIMAL(4, 2),
-  sleep_quality INTEGER NOT NULL,
-  mood INTEGER NOT NULL,
+  sleep_quality INTEGER,
+  mood INTEGER,
   sports DECIMAL(4, 2),
   studying DECIMAL(4, 2),
-  eating INTEGER NOT NULL, 
+  eating INTEGER, 
   user_id INTEGER REFERENCES users(id)
 );
+
+<%- new Date().toISOString().substring(0, 10) %>

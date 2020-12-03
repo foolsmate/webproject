@@ -1,0 +1,33 @@
+<%- include('./partials/header.ejs') %>
+
+<div id="container">
+  <h1>Summary of reports</h1>
+
+
+  <form method="POST">
+    <p>Choose week:</p>
+    <label for="date">Date</label>
+    <input type="date" label="date" name="date" value="<%= date %>" />
+    <input type="submit" value="Submit!" />
+  </form>
+
+  <h2>Weekly averages</h2>
+  <ul>
+    <li>Average sleep duration: <%= Number(summary.avg_sleep_duration).toPrecision(3) %></li>
+    <li>Average time spent on sports/exercise: <%= Number(summary.avg_sports).toPrecision(3) %></li>
+    <li>Average time spent studying: <%= Number(summary.avg_studying).toPrecision(3) %></li>
+    <li>Average sleep quality: <%= Number(summary.avg_sleep_quality).toPrecision(3) %></li>
+    <li>Average generic mood: <%= Number(summary.avg_mood).toPrecision(3) %></li>
+  </ul>
+
+  <h2>Monthly averages</h2>
+  <ul>
+    <li>Average sleep duration: <%= Number(summary.avg_mo_sleep_duration).toPrecision(3) %></li>
+    <li>Average time spent on sports/exercise: <%= Number(summary.avg_mo_sports).toPrecision(3) %></li>
+    <li>Average time spent studying: <%= Number(summary.avg_mo_studying).toPrecision(3) %></li>
+    <li>Average sleep quality: <%= Number(summary.avg_mo_sleep_quality).toPrecision(3) %></li>
+    <li>Average generic mood: <%= Number(summary.avg_mo_mood)%></li>
+  </ul>
+</div>
+
+<%- include('./partials/footer.ejs') %>

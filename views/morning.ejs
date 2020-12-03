@@ -4,28 +4,28 @@
 <div id="container">
   <form method="POST">
     <label for="date">Date</label>
-    <input type="date" label="date" name="date" value="<%- new Date().toISOString().substring(0, 10) %>" />
+    <input type="date" label="date" name="date" value="<%= date %>" />
     <label for="duration">Sleep Duration</label>
-    <input type="number" name="duration" />
+    <input type="number" step=".01" name="duration" value="<%= duration %>" />
     <label for="quality">Sleep Quality</label>
-    <input type="range" min="1" max="5" name="quality" />
+    <input type="range" min="1" max="5" name="quality" value="<%= quality %>" />
     <label for="mood">General Mood</label>
-    <input type="range" min="1" max="5" name="mood" />
+    <input type="range" min="1" max="5" name="mood" value="<%= mood %>" />
     <input type="submit" value="Submit!" />
   </form>
 
   <% if (success) { %>
-      <p>Success!</p>
-    <% } %>
+  <p>Success!</p>
+  <% } %>
   <% if (errors) { %>
-    <ul>
-        <% Object.keys(errors).forEach((attribute) => { %>
-            <% Object.values(errors[attribute]).forEach((err) => { %>
-                <li><%= err %></li>
-            <% }); %>
-        <% }); %>
-    </ul>
-    <% } %>
+  <ul>
+    <% Object.keys(errors).forEach((attribute) => { %>
+    <% Object.values(errors[attribute]).forEach((err) => { %>
+    <li><%= err %></li>
+    <% }); %>
+    <% }); %>
+  </ul>
+  <% } %>
 </div>
 
 <%- include('./partials/footer.ejs') %>
