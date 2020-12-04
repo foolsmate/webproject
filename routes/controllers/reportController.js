@@ -1,14 +1,14 @@
 import { createSummary } from '../../services/reportService.js'
 
-const showReportForm = ({ render }) => {
+const showReportForm = async ({ render }) => {
   render('report.ejs');
 };
 
-const showEveningForm = ({ render }) => {
-  render('evening.ejs');
+const showEveningForm = async ({ render }) => {
+  render('evening.ejs', { errors: [], success: false, sports: 0, study: 0, eating: 3, mood: 3, date: new Date().toISOString().substring(0, 10) });
 };
 
-const showMorningForm = ({ render }) => {
+const showMorningForm = async ({ render }) => {
   render('morning.ejs', { errors: [], success: false, duration: 0, quality: 3, mood: 3, date: new Date().toISOString().substring(0, 10) });
 };
 
@@ -24,10 +24,10 @@ const postSummary = async ({ render, request }) => {
 
   const date = params.get('date');
 
-  if(!date) {
+  if (!date) {
     date = new Date().toISOString().substring(0, 10);
   }
-  
+
   render('summary.ejs', { summary: await createSummary(date), date: date });
 };
 

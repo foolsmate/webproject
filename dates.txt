@@ -4,3 +4,7 @@ where date between '2020-12-01' and '2020-12-03'
 
 SELECT date_trunc('week', current_date);
 (date_trunc('week', current_date)+ '6 days'::interval)
+
+<% summary.forEach((obj) => { %>
+  <li><%= obj.date %></li>
+  <% }); %>

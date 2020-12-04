@@ -1,0 +1,23 @@
+<%- include('./partials/header.ejs') %>
+
+<div id="container">
+  <h1>Welcome</h1>
+  <a href="/behavior/reporting">Reporting</a>
+  <a href="/behavior/summary">Summary</a>
+  <a href="/auth/login">Login</a>
+  <a href="/auth/registration">Register</a>
+  <p>The idea of this site is to track your own behavior and to show statistics based on the data you've given.</p>
+  <ul>
+    <li>Your mood today: <%= moods.moodToday %> </li>
+    <li>Your mood yesterday: <%= moods.moodYesterday %> </li>
+    <% if(moods.moodToday > moods.moodYesterday) { %>
+    <li>Things are looking good today!</li>
+    <% } else if (moods.moodToday === moods.moodYesterday) { %>
+    <li>Things are looking similar to yesterday.</li>
+    <% } else { %>
+    <li>Things are looking gloomy today.</li>
+    <% } %>
+  </ul>
+</div>
+
+<%- include('./partials/footer.ejs') %>

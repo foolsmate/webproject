@@ -6,17 +6,30 @@
   <p></p>
   <form method="POST">
     <label for="date">Date</label>
-    <input id="date" type="date" label="date" name="date" value="<%- new Date().toISOString().substring(0, 10) %>" />
+    <input id="date" type="date" label="date" name="date" value="<%= date %>" />
     <label for="sports">Sports/exercise duration</label>
-    <input type=" number" name="sports" />
+    <input type="number" name="sports" value="<%= sports %>" />
     <label for="study">Study time</label>
-    <input type="number" name="study" />
+    <input type="number" name="study" value="<%= study %>" />
     <label for="eating">Regularity and quality of eating</label>
-    <input type="range" min="1" max="5" name="eating" />
+    <input type="range" min="1" max="5" name="eating" value="<%= eating %>" />
     <label for="mood">Mood</label>
-    <input type="range" min="1" max="5" name="mood" />
+    <input type="range" min="1" max="5" name="mood" value="<%= mood %>" />
     <input type="submit" value="Submit!" />
   </form>
+
+  <% if (success) { %>
+  <p>Success!</p>
+  <% } %>
+  <% if (errors) { %>
+  <ul>
+    <% Object.keys(errors).forEach((attribute) => { %>
+    <% Object.values(errors[attribute]).forEach((err) => { %>
+    <li><%= err %></li>
+    <% }); %>
+    <% }); %>
+  </ul>
+  <% } %>
 </div>
 
-<%- include('./partials/header.ejs') %>
+<%- include('./partials/footer.ejs') %>

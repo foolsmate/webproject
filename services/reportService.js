@@ -7,14 +7,19 @@ const validationRules = {
   mood: [required, isNumeric, maxNumber(5), minNumber(1)],
 };
 
+const validationRulesEvening = {
+  sports: [required, isNumeric, minNumber(0)],
+  study: [required, isNumeric, minNumber(0)],
+  eating: [required, isNumeric, maxNumber(5), minNumber(1)],
+  mood: [required, isNumeric, maxNumber(5), minNumber(1)],
+};
+
 const createSummary = async (date) => {
 
   const res = await executeQuery("SELECT (date_trunc('week', $1::timestamp) + '7 days'::interval) AS end_date,\
    (SELECT date_trunc('week', $1::timestamp)) AS start_date", date);
 
   const dates = res.rowsOfObjects()[0]
-
-  //This looks horrible but it works.
 
   const res2 = await executeQuery("SELECT  (\
     SELECT avg(mood) \
@@ -47,7 +52,6 @@ const createSummary = async (date) => {
   AS end_of_month, (SELECT date_trunc('month', $1::timestamp)) AS start_of_month", date);
 
   const monthDates = res3.rowsOfObjects()[0];
-  console.log(monthDates);
 
   const res4 = await executeQuery("SELECT  (\
     SELECT avg(mood) \
@@ -75,8 +79,6 @@ const createSummary = async (date) => {
   WHERE date BETWEEN $1 and $2 \
   AND user_id = $3 \
   ) AS avg_mo_studying ", monthDates.start_of_month, monthDates.end_of_month, 2);
-
-  console.log(res4.rowsOfObjects()[0]);
 
   const summary = {
     ...res2.rowsOfObjects()[0],
@@ -114,7 +116,7 @@ const reportMorning = async ({ request, session, response, render }) => {
       render("morning.ejs", { errors: [], success: true, duration: 0, quality: 3, mood: 3, date: new Date().toISOString().substring(0, 10) });
     } else {
       await executeQuery("DELETE FROM reports WHERE date = $1 and user_id = $2", date, 2);
-      await executeQuery("INSERT INTO reports (time_of_day, date, sleep_duration, sleep_quality, mood, user_id) VALUES ('morning', $1, $2, $3, $4, $5) ", date, duration, quality, mood, 2);
+      await executeQuery("INSERT INTO reports (time_of_day, date, sports, studying, eating, mood, sleep_duration, sleep_quality, user_id) VALUES ('morning', $1, $2, $3, $4, $5, $6, $7, $8) ", date, Number(res.rowsOfObjects()[0].sports), Number(res.rowsOfObjects()[0].studying), Number(res.rowsOfObjects()[0].eating), mood, duration, quality, 2);
       render("morning.ejs", { errors: [], success: true, duration: 0, quality: 3, mood: 3, date: new Date().toISOString().substring(0, 10) });
     }
   } else {
@@ -122,4 +124,39 @@ const reportMorning = async ({ request, session, response, render }) => {
   }
 }
 
-export { reportMorning, createSummary };
+const reportEvening = async ({ request, session, response, render }) => {
+
+  const body = request.body();
+  const params = await body.value;
+
+  const date = params.get('date');
+  const sports = params.get('sports');
+  const study = params.get('study');
+  const eating = params.get('eating');
+  const mood = params.get('mood');
+
+  const data = {
+    sports: Number(sports),
+    study: Number(study),
+    eating: Number(eating),
+    mood: Number(mood)
+  };
+
+  const [passes, errors] = await validate(data, validationRulesEvening);
+
+  if (passes) {
+    const res = await executeQuery("SELECT * FROM reports WHERE date = $1 and user_id = $2", date, 2);
+    if (res.rowCount === 0 || !res) {
+      await executeQuery("INSERT INTO reports (time_of_day, date, sports, studying, eating, mood, user_id) VALUES ('evening', $1, $2, $3, $4, $5, $6) ", date, sports, study, eating, mood, 2);
+      render('evening.ejs', { errors: [], success: true, sports: 0, study: 0, eating: 3, mood: 3, date: new Date().toISOString().substring(0, 10) });
+    } else {
+      await executeQuery("DELETE FROM reports WHERE date = $1 and user_id = $2", date, 2);
+      await executeQuery("INSERT INTO reports (time_of_day, date, sports, studying, eating, mood, sleep_duration, sleep_quality, user_id) VALUES ('evening', $1, $2, $3, $4, $5, $6, $7, $8) ", date, sports, study, eating, mood, Number(res.rowsOfObjects()[0].sleep_duration), res.rowsOfObjects()[0].sleep_quality, 2);
+      render('evening.ejs', { errors: [], success: true, sports: 0, study: 0, eating: 3, mood: 3, date: new Date().toISOString().substring(0, 10) });
+    }
+  } else {
+    render('evening.ejs', { errors: errors, success: false, sports: data.sports, study: data.study, eating: data.eating, mood: data.mood, date: date });
+  }
+}
+
+export { reportMorning, createSummary, reportEvening };

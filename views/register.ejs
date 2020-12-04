@@ -1,0 +1,30 @@
+<%- include('./partials/header.ejs') %>
+
+<div id="container">
+  <h1>Register</h1>
+  <form method="POST">
+    <label for="email">Email</label>
+    <input type="email" name="email" value="<%= email %>" />
+    <label for="password">Password</label>
+    <input type="password" name="password" />
+    <label for="verification">Confirm password</label>
+    <input type="password" name="verification" />
+    <input type="submit" value="Submit!" />
+  </form>
+
+  <% if (notif) { %>
+    <p><%= notif %></p>
+  <% } %>
+
+  <% if (errors) { %>
+  <ul>
+    <% Object.keys(errors).forEach((attribute) => { %>
+    <% Object.values(errors[attribute]).forEach((err) => { %>
+    <li><%= err %></li>
+    <% }); %>
+    <% }); %>
+  </ul>
+  <% } %>
+</div>
+
+<%- include('./partials/footer.ejs') %>
