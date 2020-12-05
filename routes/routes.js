@@ -1,7 +1,9 @@
 import { Router } from "../deps.js";
 import { showLogin, showRegister, register, authenticate } from "./controllers/authController.js";
-import { showReportForm, showMorningForm, showEveningForm, showSummary, postSummary} from "./controllers/reportController.js";
-import { reportMorning, reportEvening } from "../services/reportService.js"
+import {
+  showReportForm, showMorningForm, showEveningForm,
+  showSummary, postSummary, reportMorning, reportEvening
+} from "./controllers/reportController.js";
 import { showMain } from "./controllers/titleController.js"
 
 const router = new Router();
