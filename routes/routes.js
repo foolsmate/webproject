@@ -1,5 +1,5 @@
 import { Router } from "../deps.js";
-import { showLogin, showRegister, register } from "./controllers/authController.js";
+import { showLogin, showRegister, register, authenticate } from "./controllers/authController.js";
 import { showReportForm, showMorningForm, showEveningForm, showSummary, postSummary} from "./controllers/reportController.js";
 import { reportMorning, reportEvening } from "../services/reportService.js"
 import { showMain } from "./controllers/titleController.js"
@@ -10,6 +10,7 @@ router.get('/auth/login', showLogin);
 router.get('/auth/registration', showRegister)
 
 router.post('/auth/registration', register)
+router.post('/auth/login', authenticate)
 
 router.get('/behavior/reporting', showReportForm);
 router.get('/behavior/reporting/morning', showMorningForm);

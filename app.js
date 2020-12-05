@@ -4,22 +4,18 @@ import * as middleware from './middlewares/middlewares.js';
 
 const app = new Application();
 
-// Middlewares
-
-app.use(middleware.errorMiddleware);
-app.use(middleware.requestTimingMiddleware);
-app.use(middleware.serveStaticFilesMiddleware);
-
 // Session
 
 const session = new Session({ framework: "oak" });
 await session.init();
 app.use(session.use()(session));
 
-import * as bcrypt from "https://deno.land/x/bcrypt@v0.2.4/mod.ts";
+// Middlewares
 
-const hash = await bcrypt.hash("banana");
-console.log(hash)
+app.use(middleware.errorMiddleware);
+app.use(middleware.requestTimingMiddleware);
+app.use(middleware.serveStaticFilesMiddleware);
+app.use(middleware.authMiddleware);
 
 // HTML and CSS rendering
 

@@ -14,7 +14,7 @@ const validationRulesEvening = {
   mood: [required, isNumeric, maxNumber(5), minNumber(1)],
 };
 
-const createSummary = async (date) => {
+const createSummary = async (date, user_id) => {
 
   const res = await executeQuery("SELECT (date_trunc('week', $1::timestamp) + '7 days'::interval) AS end_date,\
    (SELECT date_trunc('week', $1::timestamp)) AS start_date", date);
@@ -46,7 +46,7 @@ const createSummary = async (date) => {
   FROM   reports \
   WHERE date BETWEEN $1 and $2 \
   AND user_id = $3 \
-  ) AS avg_studying ", dates.start_date, dates.end_date, 2);
+  ) AS avg_studying ", dates.start_date, dates.end_date, user_id);
 
   const res3 = await executeQuery("SELECT (date_trunc('month', $1::date) + interval '1 month' - interval '1 day')::date \
   AS end_of_month, (SELECT date_trunc('month', $1::timestamp)) AS start_of_month", date);
@@ -78,7 +78,7 @@ const createSummary = async (date) => {
   FROM   reports \
   WHERE date BETWEEN $1 and $2 \
   AND user_id = $3 \
-  ) AS avg_mo_studying ", monthDates.start_of_month, monthDates.end_of_month, 2);
+  ) AS avg_mo_studying ", monthDates.start_of_month, monthDates.end_of_month, user_id);
 
   const summary = {
     ...res2.rowsOfObjects()[0],
@@ -95,6 +95,7 @@ const reportMorning = async ({ request, session, response, render }) => {
 
   const body = request.body();
   const params = await body.value;
+  const user_id = (await session.get('user')).id;
 
   const date = params.get('date');
   const duration = params.get('duration');
@@ -110,13 +111,13 @@ const reportMorning = async ({ request, session, response, render }) => {
   const [passes, errors] = await validate(data, validationRules);
 
   if (passes) {
-    const res = await executeQuery("SELECT * FROM reports WHERE date = $1 and user_id = $2", date, 2);
+    const res = await executeQuery("SELECT * FROM reports WHERE date = $1 and user_id = $2", date, user_id);
     if (res.rowCount === 0 || !res) {
-      await executeQuery("INSERT INTO reports (time_of_day, date, sleep_duration, sleep_quality, mood, user_id) VALUES ('morning', $1, $2, $3, $4, $5) ", date, duration, quality, mood, 2);
+      await executeQuery("INSERT INTO reports (time_of_day, date, sleep_duration, sleep_quality, mood, user_id) VALUES ('morning', $1, $2, $3, $4, $5) ", date, duration, quality, mood, user_id);
       render("morning.ejs", { errors: [], success: true, duration: 0, quality: 3, mood: 3, date: new Date().toISOString().substring(0, 10) });
     } else {
-      await executeQuery("DELETE FROM reports WHERE date = $1 and user_id = $2", date, 2);
-      await executeQuery("INSERT INTO reports (time_of_day, date, sports, studying, eating, mood, sleep_duration, sleep_quality, user_id) VALUES ('morning', $1, $2, $3, $4, $5, $6, $7, $8) ", date, Number(res.rowsOfObjects()[0].sports), Number(res.rowsOfObjects()[0].studying), Number(res.rowsOfObjects()[0].eating), mood, duration, quality, 2);
+      await executeQuery("DELETE FROM reports WHERE date = $1 and user_id = $2", date, user_id);
+      await executeQuery("INSERT INTO reports (time_of_day, date, sports, studying, eating, mood, sleep_duration, sleep_quality, user_id) VALUES ('morning', $1, $2, $3, $4, $5, $6, $7, $8) ", date, Number(res.rowsOfObjects()[0].sports), Number(res.rowsOfObjects()[0].studying), Number(res.rowsOfObjects()[0].eating), mood, duration, quality, user_id);
       render("morning.ejs", { errors: [], success: true, duration: 0, quality: 3, mood: 3, date: new Date().toISOString().substring(0, 10) });
     }
   } else {
@@ -128,6 +129,7 @@ const reportEvening = async ({ request, session, response, render }) => {
 
   const body = request.body();
   const params = await body.value;
+  const user_id = (await session.get('user')).id;
 
   const date = params.get('date');
   const sports = params.get('sports');
@@ -145,13 +147,13 @@ const reportEvening = async ({ request, session, response, render }) => {
   const [passes, errors] = await validate(data, validationRulesEvening);
 
   if (passes) {
-    const res = await executeQuery("SELECT * FROM reports WHERE date = $1 and user_id = $2", date, 2);
+    const res = await executeQuery("SELECT * FROM reports WHERE date = $1 and user_id = $2", date, user_id);
     if (res.rowCount === 0 || !res) {
-      await executeQuery("INSERT INTO reports (time_of_day, date, sports, studying, eating, mood, user_id) VALUES ('evening', $1, $2, $3, $4, $5, $6) ", date, sports, study, eating, mood, 2);
+      await executeQuery("INSERT INTO reports (time_of_day, date, sports, studying, eating, mood, user_id) VALUES ('evening', $1, $2, $3, $4, $5, $6) ", date, sports, study, eating, mood, user_id);
       render('evening.ejs', { errors: [], success: true, sports: 0, study: 0, eating: 3, mood: 3, date: new Date().toISOString().substring(0, 10) });
     } else {
-      await executeQuery("DELETE FROM reports WHERE date = $1 and user_id = $2", date, 2);
-      await executeQuery("INSERT INTO reports (time_of_day, date, sports, studying, eating, mood, sleep_duration, sleep_quality, user_id) VALUES ('evening', $1, $2, $3, $4, $5, $6, $7, $8) ", date, sports, study, eating, mood, Number(res.rowsOfObjects()[0].sleep_duration), res.rowsOfObjects()[0].sleep_quality, 2);
+      await executeQuery("DELETE FROM reports WHERE date = $1 and user_id = $2", date, user_id);
+      await executeQuery("INSERT INTO reports (time_of_day, date, sports, studying, eating, mood, sleep_duration, sleep_quality, user_id) VALUES ('evening', $1, $2, $3, $4, $5, $6, $7, $8) ", date, sports, study, eating, mood, Number(res.rowsOfObjects()[0].sleep_duration), res.rowsOfObjects()[0].sleep_quality, user_id);
       render('evening.ejs', { errors: [], success: true, sports: 0, study: 0, eating: 3, mood: 3, date: new Date().toISOString().substring(0, 10) });
     }
   } else {

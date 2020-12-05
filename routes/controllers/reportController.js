@@ -18,9 +18,11 @@ const showSummary = async ({ render }) => {
   render('summary.ejs', { summary: await createSummary(date), date: date });
 };
 
-const postSummary = async ({ render, request }) => {
+const postSummary = async ({ render, request, session }) => {
   const body = request.body();
   const params = await body.value;
+
+  const userId = (await session.get('user')).id;
 
   const date = params.get('date');
 
@@ -28,7 +30,7 @@ const postSummary = async ({ render, request }) => {
     date = new Date().toISOString().substring(0, 10);
   }
 
-  render('summary.ejs', { summary: await createSummary(date), date: date });
+  render('summary.ejs', { summary: await createSummary(date, userId), date: date });
 };
 
 

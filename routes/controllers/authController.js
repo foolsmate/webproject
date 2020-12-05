@@ -3,7 +3,7 @@ import { validate, required, isEmail, minLength } from "https://deno.land/x/vali
 import { createUser, existingUsers } from "../../services/authService.js";
 
 const showLogin = async ({ render }) => {
-  render('login.ejs');
+  render('login.ejs', { notif: "" });
 };
 
 const showRegister = async ({ render }) => {
@@ -52,8 +52,45 @@ const register = async ({ request, response, session, render }) => {
   } else {
     render('register.ejs', { errors: errors, email: email, notif: '' });
   }
-
 };
 
+const authenticate = async ({ request, response, session, render}) => {
+  const body = request.body();
+  const params = await body.value;
 
-export { showLogin, showRegister, register };
+  const email = params.get('email');
+  const password = params.get('password');
+
+  const users = await existingUsers(email);
+
+  console.log(users.rowCount);
+
+  if (users.rowCount === 0) {
+    render('login.ejs', { notif: 'Invalid email or password' });
+    return;
+  }
+
+  const userObj = users.rowsOfObjects()[0];
+
+  const hash = userObj.password;
+
+  const passwordCorrect = await bcrypt.compare(password, hash);
+  if (!passwordCorrect) {
+    render('login.ejs', { notif: 'Invalid email or password' });
+    return;
+  }
+
+  await session.set('authenticated', true);
+  await session.set('user', {
+    id: userObj.id,
+    email: userObj.email
+  });
+
+  response.redirect('/')
+
+}
+
+
+
+
+export { showLogin, showRegister, register, authenticate };
