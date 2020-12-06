@@ -36,7 +36,7 @@ const createSummary = async (date, user_id) => {
   ) AS avg_studying ", dates.start_date, dates.end_date, user_id);
 
   const res3 = await executeQuery("SELECT (date_trunc('month', $1::date) + interval '1 month' - interval '1 day')::date \
-  AS end_of_month, (SELECT date_trunc('month', $1::timestamp)) AS start_of_month", date);
+  AS end_of_month, (SELECT date_trunc('month', $1::timestamp) + interval '1 day') AS start_of_month", date);
 
   const monthDates = res3.rowsOfObjects()[0];
 
@@ -65,7 +65,7 @@ const createSummary = async (date, user_id) => {
   FROM   reports \
   WHERE date BETWEEN $1 and $2 \
   AND user_id = $3 \
-  ) AS avg_mo_studying ", monthDates.start_of_month, monthDates.end_of_month, user_id);
+  ) AS avg_mo_studying ", monthDates.start_of_month.toISOString().substring(0, 10), monthDates.end_of_month.toISOString().substring(0, 10), user_id);
 
   const summary = {
     ...res2.rowsOfObjects()[0],
@@ -77,6 +77,34 @@ const createSummary = async (date, user_id) => {
   }
   return null;
 }
+
+const queryWeekly = async (date) => {
+
+  const res = await executeQuery("SELECT (date_trunc('week', $1::timestamp) + '7 days'::interval) AS end_date,\
+   (SELECT date_trunc('week', $1::timestamp)) AS start_date", date);
+
+  const dates = res.rowsOfObjects()[0]
+
+  const res2 = await executeQuery("SELECT avg(sleep_duration) as avg_slp_dur, avg(mood) as mood, avg(sleep_quality) as avg_slp_ql, avg(sports) as sports, avg(studying) as studying, avg(eating) as eating FROM reports WHERE date BETWEEN $1 and $2", dates.start_date, dates.end_date);
+
+  if (res2 && res2.rowCount > 0) {
+    return res2.rowsOfObjects();
+  } else {
+    return null;
+  }
+}
+
+const queryDaily = async (date) => {
+
+  const res = await executeQuery("SELECT avg(sleep_duration) as avg_slp_dur, avg(mood) as mood, avg(sleep_quality) as avg_slp_ql, avg(sports) as sports, avg(studying) as studying, avg(eating) as eating FROM reports WHERE date = $1", date);
+
+  if (res && res.rowCount > 0) {
+    return res.rowsOfObjects();
+  } else {
+    return null;
+  }
+}
+
 
 const queryMorning = async (data, user_id) => {
 
@@ -102,4 +130,4 @@ const queryEvening = async (data, user_id) => {
 
 }
 
-export { createSummary, queryMorning, queryEvening};
+export { createSummary, queryMorning, queryEvening, queryWeekly, queryDaily};

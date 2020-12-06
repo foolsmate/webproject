@@ -1,6 +1,5 @@
 import { send } from '../deps.js';
 
-
 const errorMiddleware = async (context, next) => {
   try {
     await next();

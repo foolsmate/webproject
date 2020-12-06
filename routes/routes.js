@@ -5,6 +5,7 @@ import {
   showSummary, postSummary, reportMorning, reportEvening
 } from "./controllers/reportController.js";
 import { showMain } from "./controllers/titleController.js"
+import { getWeekly, getDaily } from "./apis/reportApi.js";
 
 const router = new Router();
 
@@ -23,6 +24,9 @@ router.post('/behavior/reporting/evening', reportEvening);
 
 router.get('/behavior/summary', showSummary);
 router.post('/behavior/summary', postSummary);
+
+router.get('/api/summary', getWeekly);
+router.get('/api/summary/:year/:month/:day', getDaily);
 
 router.get('/', showMain);
 

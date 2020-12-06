@@ -10,5 +10,3 @@ CREATE TABLE reports (
   eating INTEGER, 
   user_id INTEGER REFERENCES users(id)
 );
-
-<%- new Date().toISOString().substring(0, 10) %>

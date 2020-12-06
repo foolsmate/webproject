@@ -14,8 +14,6 @@ const getMoods = async () => {
   const moodToday = Number(r.rowsOfObjects()[0].avg);
   const moodYesterday = Number(r2.rowsOfObjects()[0].avg);
 
-  console.log(r.rowsOfObjects()[0]);
-
   const obj = {
     moodToday: moodToday,
     moodYesterday: moodYesterday
