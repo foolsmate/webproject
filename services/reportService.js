@@ -1,5 +1,4 @@
 import { executeQuery } from "../database/database.js";
-import { validate, required, isNumeric, maxNumber, minNumber } from "https://deno.land/x/validasaur@v0.15.0/mod.ts";
 
 const createSummary = async (date, user_id) => {
 
@@ -94,9 +93,13 @@ const queryWeekly = async (date) => {
   }
 }
 
-const queryDaily = async (date) => {
+const queryDaily = async (date, user_id) => {
 
-  const res = await executeQuery("SELECT avg(sleep_duration) as avg_slp_dur, avg(mood) as mood, avg(sleep_quality) as avg_slp_ql, avg(sports) as sports, avg(studying) as studying, avg(eating) as eating FROM reports WHERE date = $1", date);
+  let res = await executeQuery("SELECT avg(sleep_duration) as avg_slp_dur, avg(mood) as mood, avg(sleep_quality) as avg_slp_ql, avg(sports) as sports, avg(studying) as studying, avg(eating) as eating FROM reports WHERE date = $1", date);
+
+  if (user_id) {
+    res = await executeQuery("SELECT avg(sleep_duration) as avg_slp_dur, avg(mood) as mood, avg(sleep_quality) as avg_slp_ql, avg(sports) as sports, avg(studying) as studying, avg(eating) as eating FROM reports WHERE date = $1 and user_id= $2", date, user_id);
+  }
 
   if (res && res.rowCount > 0) {
     return res.rowsOfObjects();
@@ -114,7 +117,7 @@ const queryMorning = async (data, user_id) => {
     await executeQuery("INSERT INTO reports (time_of_day, date, sleep_duration, sleep_quality, mood, user_id) VALUES ('morning', $1, $2, $3, $4, $5) ", data.date, data.duration, data.quality, data.mood, user_id);
   } else {
     await executeQuery("DELETE FROM reports WHERE date = $1 and user_id = $2", data.date, user_id);
-    await executeQuery("INSERT INTO reports (time_of_day, date, sports, studying, eating, mood, sleep_duration, sleep_quality, user_id) VALUES ('morning', $1, $2, $3, $4, $5, $6, $7, $8) ", date.date, Number(res.rowsOfObjects()[0].sports), Number(res.rowsOfObjects()[0].studying), Number(res.rowsOfObjects()[0].eating), data.mood, data.duration, data.quality, user_id);
+    await executeQuery("INSERT INTO reports (time_of_day, date, sports, studying, eating, mood, sleep_duration, sleep_quality, user_id) VALUES ('morning', $1, $2, $3, $4, $5, $6, $7, $8) ", data.date, Number(res.rowsOfObjects()[0].sports), Number(res.rowsOfObjects()[0].studying), Number(res.rowsOfObjects()[0].eating), data.mood, data.duration, data.quality, user_id);
   }
 }
 
@@ -130,4 +133,4 @@ const queryEvening = async (data, user_id) => {
 
 }
 
-export { createSummary, queryMorning, queryEvening, queryWeekly, queryDaily};
+export { createSummary, queryMorning, queryEvening, queryWeekly, queryDaily };

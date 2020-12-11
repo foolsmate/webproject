@@ -1,9 +1,24 @@
-import { createSummary, queryMorning, queryEvening } from '../../services/reportService.js'
+import { createSummary, queryMorning, queryEvening, queryDaily } from '../../services/reportService.js'
 import { validate, required, isNumeric, maxNumber, minNumber } from "https://deno.land/x/validasaur@v0.15.0/mod.ts";
 
 
-const showReportForm = async ({ render }) => {
-  render('report.ejs');
+const showReportForm = async ({ render, session }) => {
+
+  let eveningReported, morningReported = false;
+
+  const user_id = (await session.get('user')).id;
+
+  const values = await queryDaily(new Date().toISOString().substring(0, 10), user_id);
+
+  if (typeof Number(values.avg_slp_number) === 'number' && typeof Number(values.avg_slp_ql) === 'number' && typeof Number(values.mood) === 'number') {
+    morningReported = true;
+  }
+
+  if (typeof Number(values.sports) === 'number' && typeof Number(values.studying) === 'number' && typeof Number(values.eating) === 'number' && typeof Number(values.mood) === 'number') {
+    eveningReported = true;
+  }
+
+  render('report.ejs', { eveningReported, morningReported });
 };
 
 const showEveningForm = async ({ render }) => {

@@ -1,8 +1,9 @@
 <%- include('./partials/header.ejs') %>
 
-<div id= "container" text-align="center">
-<a href="reporting/morning">Report morning</a><br />
-<a href="reporting/evening">Report evening</a>
+<div id="container" text-align="center">
+  <a href="reporting/morning">Report morning <% if (morningReported) {%>(Morning already reported)<% } %></a><br />
+  <a href="reporting/evening">Report evening <% if (eveningReported) {%>(Evening already reported)<% } %></a>
+
 </div>
 
 <%- include('./partials/footer.ejs') %>
