@@ -1,5 +1,7 @@
 let config = {};
 
+// Choose test env or actual db
+
 if (Deno.env.get('TEST_ENVIRONMENT')) {
   config.database = {};
 } else {

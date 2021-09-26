@@ -1,6 +1,8 @@
 import { Client } from "../deps.js";
 import { config } from "../config/config.js";
 
+// Functions for executing database queries 
+
 const getClient = () => {
   return new Client(config.database);
 }
